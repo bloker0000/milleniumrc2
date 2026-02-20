@@ -3573,8 +3573,8 @@
             local offset = 50
 
             for i, v in notifications.notifs do
-                local Position = vec2(20, offset)
-                library:tween(v, {Position = dim_offset(Position.X, Position.Y)}, Enum.EasingStyle.Quad, 0.4)
+                local Position = vec2(1, -offset - v.AbsoluteSize.Y)
+                library:tween(v, {Position = dim2(1, -20, 1, -offset - v.AbsoluteSize.Y)}, Enum.EasingStyle.Quad, 0.4)
                 offset += (v.AbsoluteSize.Y + 10)
             end
 
@@ -3620,7 +3620,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                     BackgroundTransparency = 1;
-                    AnchorPoint = vec2(1, 0);
+                    AnchorPoint = vec2(0, 0);
                     AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(14, 14, 16)
                 });
@@ -3705,9 +3705,9 @@
             
             local offset = notifications:refresh_notifs()
 
-            items[ "notification" ].Position = dim_offset(20, offset)
+            items[ "notification" ].Position = dim2(1, 210 + 20, 1, -offset - items[ "notification" ].AbsoluteSize.Y)
 
-            library:tween(items[ "notification" ], {AnchorPoint = vec2(0, 0)}, Enum.EasingStyle.Quad, 1)
+            library:tween(items[ "notification" ], {Position = dim2(1, -20, 1, -offset - items[ "notification" ].AbsoluteSize.Y)}, Enum.EasingStyle.Quad, 1)
             library:tween(items[ "bar" ], {Size = dim2(1, -8, 0, 5)}, Enum.EasingStyle.Quad, cfg.lifetime)
 
             task.spawn(function()
@@ -3717,7 +3717,7 @@
                 
                 notifications:fade(items[ "notification" ], true)
                 
-                library:tween(items[ "notification" ], {AnchorPoint = vec2(1, 0)}, Enum.EasingStyle.Quad, 1)
+                library:tween(items[ "notification" ], {Position = dim2(1, 210 + 20, 1, items[ "notification" ].Position.Y.Offset)}, Enum.EasingStyle.Quad, 1)
 
                 task.wait(1)
         
