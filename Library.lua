@@ -3202,7 +3202,9 @@
                     cfg.set_mode(cfg.mode) 
                 end 
 
-                cfg.callback(cfg.active)
+                if not cfg._initializing then
+                    cfg.callback(cfg.active)
+                end
 
                 local text = tostring(cfg.key) ~= "Enums" and (keys[cfg.key] or tostring(cfg.key):gsub("Enum.", "")) or nil
                 local __text = text and (tostring(text):gsub("KeyCode.", ""):gsub("UserInputType.", ""))
@@ -3270,7 +3272,9 @@
                 end
             end)
             
+            cfg._initializing = true
             cfg.set({mode = cfg.mode, active = cfg.active, key = cfg.key})           
+            cfg._initializing = false
             config_flags[cfg.flag] = cfg.set
 
             return setmetatable(cfg, library)
