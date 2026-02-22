@@ -1639,7 +1639,9 @@
                     library:tween(items[ "circle" ], {BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88), Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2)}, Enum.EasingStyle.Quad)
                 end
 
-                cfg.callback(bool)
+                if not cfg._initializing then
+                    cfg.callback(bool)
+                end
 
                 if cfg.folding then 
                     elements.Visible = bool
@@ -1670,7 +1672,9 @@
                 });
             end
 
+            cfg._initializing = true
             cfg.set(cfg.default)
+            cfg._initializing = false
 
             config_flags[cfg.flag] = cfg.set
 
@@ -2163,7 +2167,9 @@
                 items[ "sub_text" ].Text = isTable and concat(selected, ", ") or selected[1] or ""
                 flags[cfg.flag] = isTable and selected or selected[1]
                 
-                cfg.callback(flags[cfg.flag]) 
+                if not cfg._initializing then
+                    cfg.callback(flags[cfg.flag]) 
+                end
             end
             
             function cfg.refresh_options(list) 
@@ -2223,7 +2229,9 @@
             config_flags[cfg.flag] = cfg.set
             
             cfg.refresh_options(cfg.options)
+            cfg._initializing = true
             cfg.set(cfg.default)
+            cfg._initializing = false
                 
             return setmetatable(cfg, library)
         end
@@ -3202,7 +3210,7 @@
                     cfg.set_mode(cfg.mode) 
                 end 
 
-                if not cfg._initializing then
+                if not cfg._initializing and not cfg._rebinding then
                     cfg.callback(cfg.active)
                 end
 
@@ -3230,7 +3238,9 @@
                 items[ "key" ].Text = "..."	
 
                 cfg.binding = library:connection(uis.InputBegan, function(keycode, game_event)  
+                    cfg._rebinding = true
                     cfg.set(keycode.KeyCode ~= Enum.KeyCode.Unknown and keycode.KeyCode or keycode.UserInputType)
+                    cfg._rebinding = false
                     
                     cfg.binding:Disconnect() 
                     cfg.binding = nil
@@ -3244,24 +3254,21 @@
             end)
 
             library:connection(uis.InputBegan, function(input, game_event) 
-                if not game_event then
-                    local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
+                if cfg.binding or uis:GetFocusedTextBox() then return end
+                local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
 
-                    if selected_key == cfg.key then 
-                        if cfg.mode == "Toggle" then 
-                            cfg.active = not cfg.active
-                            cfg.set(cfg.active)
-                        elseif cfg.mode == "Hold" then 
-                            cfg.set(true)
-                        end
+                if selected_key == cfg.key then 
+                    if cfg.mode == "Toggle" then 
+                        cfg.active = not cfg.active
+                        cfg.set(cfg.active)
+                    elseif cfg.mode == "Hold" then 
+                        cfg.set(true)
                     end
                 end
             end)    
 
             library:connection(uis.InputEnded, function(input, game_event) 
-                if game_event then 
-                    return 
-                end 
+                if uis:GetFocusedTextBox() then return end
 
                 local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
     
