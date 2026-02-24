@@ -77,7 +77,8 @@
         config_flags = {},
         connections = {},   
         notifications = {notifs = {}},
-        current_open; 
+        current_open;
+        _loading_config = false; 
     }
 
     local themes = {
@@ -400,6 +401,7 @@
         end
 
         function library:load_config(config_json) 
+            library._loading_config = true
             local config = http_service:JSONDecode(config_json)
             
             for _, v in config do 
@@ -412,13 +414,14 @@
                 if function_set then 
                     if type(v) == "table" and v["Transparency"] and v["Color"] then
                         function_set(hex(v["Color"]), v["Transparency"])
-                    elseif type(v) == "table" and v["active"] then 
+                    elseif type(v) == "table" and v["active"] ~= nil then 
                         function_set(v)
                     else
                         function_set(v)
                     end
                 end 
             end 
+            library._loading_config = false
         end 
         
         function library:round(number, float) 
@@ -1641,6 +1644,8 @@
             end;
             
             function cfg.set(bool)
+                cfg.enabled = bool
+
                 if cfg.type == "checkbox" then 
                     library:tween(items[ "tick" ], {Rotation = bool and 0 or 45, ImageTransparency = bool and 0 or 1})
                     library:tween(items[ "toggle_button" ], {BackgroundColor3 = bool and themes.preset.accent or rgb(67, 67, 68)})
@@ -1651,7 +1656,7 @@
                     library:tween(items[ "circle" ], {BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88), Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2)}, Enum.EasingStyle.Quad)
                 end
 
-                if not cfg._initializing then
+                if not cfg._initializing and not library._loading_config then
                     cfg.callback(bool)
                 end
 
@@ -3215,14 +3220,14 @@
                     cfg.key = input.key or "NONE"
                     cfg.mode = input.mode or "Toggle"
 
-                    if input.active then
+                    if input.active ~= nil then
                         cfg.active = input.active
                     end
 
                     cfg.set_mode(cfg.mode) 
                 end 
 
-                if not cfg._initializing and not cfg._rebinding then
+                if not cfg._initializing and not cfg._rebinding and not library._loading_config then
                     cfg.callback(cfg.active)
                 end
 
