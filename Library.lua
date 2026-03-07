@@ -579,7 +579,7 @@
                     BackgroundColor3 = rgb(21, 21, 23)
                 });
                 
-                items[ "button_holder" ] = library:create( "Frame" , {
+                items[ "button_holder" ] = library:create( "ScrollingFrame" , {
                     Parent = items[ "side_frame" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
@@ -587,7 +587,13 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Size = dim2(1, 0, 1, -60);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
+                    BackgroundColor3 = rgb(255, 255, 255);
+                    ScrollBarThickness = 2;
+                    ScrollBarImageColor3 = rgb(44, 44, 46);
+                    CanvasSize = dim2(0, 0, 0, 0);
+                    AutomaticCanvasSize = Enum.AutomaticSize.Y;
+                    ScrollingDirection = Enum.ScrollingDirection.Y;
+                    ClipsDescendants = true
                 }); cfg.button_holder = items[ "button_holder" ];
                 
                 library:create( "UIListLayout" , {
